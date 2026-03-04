@@ -99,6 +99,24 @@
                 document.querySelector("#loading-text").remove();
             });
         });
+        // ... existing createUnityInstance code ...
+}).then((unityInstance) => {
+    document.querySelector("#loading-text").remove();
+
+    // --- LOCAL STORAGE SYNC START ---
+    window.addEventListener("beforeunload", function (e) {
+        // This forces Unity's File System to sync to the browser database
+        unityInstance.SendMessage("GameManager", "SaveGame"); // Optional: if you have a save function
+        
+        // Internal Unity File System Sync
+        if (typeof FS !== 'undefined' && FS.syncfs) {
+            FS.syncfs(false, function (err) {
+                console.log("Filesystem synced to IndexedDB");
+            });
+        }
+    });
+    // --- LOCAL STORAGE SYNC END ---
+});
     </script>
 </body>
 
